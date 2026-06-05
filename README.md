@@ -106,6 +106,9 @@ npm run dev
 Open the local URL in your web browser:
 👉 **[http://127.0.0.1:5173/](http://127.0.0.1:5173/)**
 
+Open the Official URL:
+👉 **[https://yogeshswami0.github.io/UFO-ANALYSIS/](https://yogeshswami0.github.io/UFO-ANALYSIS/)
+
 *Warning: Opening the `index.html` file directly using the `file://` protocol will fail, as browsers block modules, data fetches, and WebGL assets from running locally due to CORS security policies.*
 
 ### Step 4: Compile Production Build (Optional)
@@ -114,3 +117,6 @@ To package the app into a minified, lightweight build:
 npm run build
 ```
 The compiled HTML, CSS, and JS bundle will be generated under the `dist/` directory.
+
+## Developed by
+YOGESH SWAMI
