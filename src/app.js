@@ -423,11 +423,11 @@ async function initDashboard() {
   
   // 1. Fetch initial statistics and summary data
   try {
-    state.summary = await loadJSON('/data/summary.json');
-    const yearData = await loadJSON('/data/sightings_by_year.json');
-    const shapeData = await loadJSON('/data/sightings_by_shape.json');
-    const monthData = await loadJSON('/data/sightings_by_month.json');
-    const hourData = await loadJSON('/data/sightings_by_hour.json');
+    state.summary = await loadJSON('data/summary.json');
+    const yearData = await loadJSON('data/sightings_by_year.json');
+    const shapeData = await loadJSON('data/sightings_by_shape.json');
+    const monthData = await loadJSON('data/sightings_by_month.json');
+    const hourData = await loadJSON('data/sightings_by_hour.json');
     
     // Render static metrics KPIs
     document.getElementById('kpi-total').textContent = state.summary.total_sightings.toLocaleString();
@@ -444,7 +444,7 @@ async function initDashboard() {
     });
     
     // 2. Fetch the 3D globe pins sample
-    state.mapSightings = await loadJSON('/data/map_sightings.json');
+    state.mapSightings = await loadJSON('data/map_sightings.json');
     state.filteredSightings = [...state.mapSightings];
     
     // Populate select lists
