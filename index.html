@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UFO Sightings Intelligence Center & Analytics Dashboard</title>
+  <meta name="description" content="An interactive 3D WebGL and data analytics dashboard for historical UFO sightings, featuring procedural 3D flying saucers, rotating Earth globe, and neon charts.">
+  
+  <!-- Diagnostics Console Overlay -->
+  <script>
+    window.onerror = function(msg, url, line, col, err) {
+      const box = document.getElementById('debug-error-box');
+      if (box) {
+        box.style.display = 'block';
+        box.innerHTML += '<div style="margin-top:6px;">[Line ' + line + '] ' + msg + ' (' + url.split('/').pop() + ')</div>';
+      }
+      return false;
+    };
+    window.addEventListener('unhandledrejection', function(e) {
+      const box = document.getElementById('debug-error-box');
+      if (box) {
+        box.style.display = 'block';
+        box.innerHTML += '<div style="margin-top:6px;">[Promise] ' + (e.reason ? e.reason.message || e.reason : 'Unknown rejection') + '</div>';
+      }
+    });
+  </script>
+
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="/src/style.css">
+  
+  <!-- Preconnect to fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+</head>
+<body>
+  
+  <!-- Debug diagnostics overlay -->
+  <div id="debug-error-box" style="display: none; position: fixed; top: 15px; left: 15px; right: 15px; padding: 15px; background: rgba(255, 30, 30, 0.95); border: 2px solid #fff; border-radius: 6px; color: #fff; z-index: 999999; font-family: monospace; font-size: 12px; white-space: pre-wrap; box-shadow: 0 10px 30px rgba(0,0,0,0.8);">
+    <h4 style="margin-bottom: 8px; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.4); padding-bottom: 4px; font-family: sans-serif;">⚠️ SYSTEM DIAGNOSTICS: RUNTIME ERROR CAPTURED</h4>
+  </div>
+  
+  <!-- SCANLINES OVERLAY FOR SCI-FI CRT TUBE LOOK -->
+  <div class="crt-scanlines"></div>
+
+  <!-- INTRO LANDING SCREEN -->
+  <section id="intro-screen">
+    <!-- Starfield particle background is rendered here -->
+    <div id="intro-ufo-container"></div>
+    <div class="intro-content">
+      <div class="glitch-wrapper">
+        <h1 class="glitch-text" data-text="UFO SIGHTINGS">UFO SIGHTINGS</h1>
+      </div>
+      <h2 class="sub-title">INTELLIGENCE CENTER</h2>
+      <p class="summary-text">
+        ACCESSING GLOBAL ENCOUNTER ARCHIVES (1949 – 2014)<br>
+        WARNING: CLASSIFIED DATASET FOR EXPLORATORY ANALYSES ONLY
+      </p>
+      <div class="system-status-box">
+        <span class="status-indicator-dot pulsing"></span>
+        <span class="status-text">DECRYPTING DATABASES...</span>
+      </div>
+      <button id="enter-btn" class="glow-btn">ENTER SYSTEM</button>
+    </div>
+  </section>
+
+  <!-- MAIN DASHBOARD -->
+  <main id="dashboard-container" class="hidden">
+    <!-- TOP NAVIGATION BAR -->
+    <header class="dashboard-header">
+      <div class="header-logo-section">
+        <div id="ufo-logo-container"></div>
+        <div class="header-titles">
+          <h1>UFO INTEL DECK</h1>
+          <p>DECEN-SIGHTING DATA ANALYZER v1.94</p>
+        </div>
+      </div>
+      
+      <!-- GLOBAL FILTERS -->
+      <div class="filter-bar">
+        <div class="search-box">
+          <span class="icon">🔍</span>
+          <input type="text" id="search-input" placeholder="Search comments (e.g. green, glowing)..." />
+        </div>
+        
+        <div class="select-wrapper">
+          <select id="country-select">
+            <option value="ALL">All Countries</option>
+          </select>
+        </div>
+        
+        <div class="select-wrapper">
+          <select id="shape-select">
+            <option value="ALL">All Shapes</option>
+          </select>
+        </div>
+
+        <button id="audio-toggle-btn" class="audio-btn active" title="Toggle Sound Synth">
+          <span class="audio-icon">🔊</span> SOUND ON
+        </button>
+      </div>
+    </header>
+
+    <!-- METRICS RIBBON (KPIs) -->
+    <section class="metrics-ribbon">
+      <div class="kpi-card">
+        <span class="label">TOTAL ENCOUNTERS</span>
+        <span class="value" id="kpi-total">-</span>
+        <div class="sparkline-bar"></div>
+      </div>
+      <div class="kpi-card">
+        <span class="label">PRIMARY CORRIDOR</span>
+        <span class="value" id="kpi-country">-</span>
+        <div class="sparkline-bar"></div>
+      </div>
+      <div class="kpi-card">
+        <span class="label">DOMINANT SHAPE</span>
+        <span class="value" id="kpi-shape">-</span>
+        <div class="sparkline-bar"></div>
+      </div>
+      <div class="kpi-card">
+        <span class="label">PEAK ENCOUNTER HOUR</span>
+        <span class="value" id="kpi-hour">-</span>
+        <div class="sparkline-bar"></div>
+      </div>
+    </section>
+
+    <!-- MIDDLE INTERACTIVE SECTION -->
+    <section class="dashboard-grid">
+      <!-- LEFT DATA COLUMN -->
+      <div class="grid-col left-col">
+        <!-- TREND LINE CHART -->
+        <div class="glass-card chart-card">
+          <div class="card-header">
+            <h3>SIGHTINGS ACTIVITY OVER TIME</h3>
+            <span class="card-status">LIVE TREND</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="trend-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- SHAPES BAR CHART -->
+        <div class="glass-card chart-card">
+          <div class="card-header">
+            <h3>UFO SHAPES INVENTORY</h3>
+            <span class="card-status">DISTRIBUTION</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="shape-chart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- CENTER MAP COLUMN -->
+      <div class="grid-col center-col">
+        <div class="glass-card map-card">
+          <!-- MAP CONTAINER -->
+          <div id="globe-container">
+            <!-- Loader -->
+            <div id="globe-loader" class="loader-container">
+              <div class="loader-spinner"></div>
+              <p>RENDERING WebGL GEOSPACIAL ORBIT...</p>
+            </div>
+            <!-- Three.js renders Earth canvas here -->
+          </div>
+
+          <!-- SIGHTING DETAILED POPUP CARD (HOLOGRAM OVERLAY) -->
+          <div id="sighting-popup" class="hologram-panel hidden">
+            <button id="close-popup-btn" class="close-btn">&times;</button>
+            <div class="hologram-header">
+              <h4 id="popup-location">LOCATION</h4>
+              <span id="popup-date" class="date">DATE</span>
+            </div>
+            <div class="hologram-body">
+              <div class="metric-row">
+                <div class="metric-item">
+                  <span class="m-label">SHAPE</span>
+                  <span class="m-value" id="popup-shape">Light</span>
+                </div>
+                <div class="metric-item">
+                  <span class="m-label">DURATION</span>
+                  <span class="m-value" id="popup-duration">5 mins</span>
+                </div>
+              </div>
+              <div class="comments-section">
+                <span class="c-label">CLASSIFIED EYEWITNESS DECLASSIFIED LOG:</span>
+                <p id="popup-desc" class="desc">"Eyewitness observed glowing green orbs..."</p>
+              </div>
+            </div>
+            <div class="hologram-scanner"></div>
+          </div>
+
+          <!-- TIMELINE CONTROLS PANEL -->
+          <div class="timeline-panel">
+            <div class="timeline-header">
+              <span class="t-title">TIMELINE SCRUBBER</span>
+              <span id="current-year-label" class="t-year">ALL YEARS</span>
+            </div>
+            <div class="timeline-controls">
+              <button id="play-btn" class="timeline-btn play-icon">▶ PLAY</button>
+              <input type="range" id="year-slider" min="1949" max="2014" step="1" value="2014" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT DATA COLUMN -->
+      <div class="grid-col right-col">
+        <!-- MONTH ACTIVITY CHART -->
+        <div class="glass-card chart-card">
+          <div class="card-header">
+            <h3>SEASONAL PATTERNS</h3>
+            <span class="card-status">MONTHLY ACTIVITY</span>
+          </div>
+          <div class="chart-wrapper">
+            <canvas id="month-chart"></canvas>
+          </div>
+        </div>
+
+        <!-- HOLOGRAPHIC SCANNER & HOURLY CHART -->
+        <div class="glass-card chart-card alien-hologram-card">
+          <div class="card-header">
+            <h3>ALIEN DNA / SUBJECT ANALYZER</h3>
+            <span class="card-status blink">SCANNING...</span>
+          </div>
+          <div class="alien-layout">
+            <div id="alien-hologram-container"></div>
+            <div class="hourly-overlay">
+              <canvas id="hour-chart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BOTTOM FEED SECTION -->
+    <section class="bottom-feed">
+      <div class="glass-card table-card">
+        <div class="card-header">
+          <div class="title-with-count">
+            <h3>DECLASSIFIED LOG RECORDS</h3>
+            <span class="badge" id="sighting-count">0 SIGHTINGS FOUND</span>
+          </div>
+          <span class="card-status">CLICK ROW TO FOCUS ORBITAL INTEL</span>
+        </div>
+        <div class="table-wrapper">
+          <table id="sightings-table">
+            <thead>
+              <tr>
+                <th style="width: 15%">DATE / TIME</th>
+                <th style="width: 20%">CITY</th>
+                <th style="width: 10%">STATE</th>
+                <th style="width: 15%">COUNTRY</th>
+                <th style="width: 10%">SHAPE</th>
+                <th style="width: 10%">DURATION</th>
+                <th style="width: 20%">EYEWITNESS REMARKS</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              <tr>
+                <td colspan="7" class="loading-td">AWAITING SYSTEM SYNCHRONIZATION...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <!-- PAGINATION -->
+        <div class="pagination-panel">
+          <button id="prev-page-btn" class="pagination-btn" disabled>&lt; PREVIOUS</button>
+          <span id="page-indicator" class="page-num">PAGE 1 OF 1</span>
+          <button id="next-page-btn" class="pagination-btn" disabled>NEXT &gt;</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>

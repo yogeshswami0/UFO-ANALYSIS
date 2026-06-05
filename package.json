@@ -1,0 +1,18 @@
+{
+  "name": "ufo-sightings-dashboard",
+  "version": "1.0.0",
+  "description": "Futuristic 3D Data Analytics Dashboard for UFO Sightings",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "three": "^0.152.2",
+    "chart.js": "^4.3.0"
+  },
+  "devDependencies": {
+    "vite": "^4.3.9"
+  }
+}
